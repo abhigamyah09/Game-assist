@@ -11,19 +11,23 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
       - name: Unzip Project
         run: unzip GameAssist_Complete.zip
 
-      - name: Make gradlew executable
+      - name: Install Gradle
         run: |
-          cd GameAssist
-          chmod +x gradlew
-          sed -i 's/DEFAULT_JVM_OPTS=.*/DEFAULT_JVM_OPTS=""/' gradlew
+          wget -q https://services.gradle.org/distributions/gradle-8.4-bin.zip
+          unzip -q gradle-8.4-bin.zip
+          export PATH=$PWD/gradle-8.4/bin:$PATH
+          echo "$PWD/gradle-8.4/bin" >> $GITHUB_PATH
 
       - name: Build APK
         run: |
           cd GameAssist
-          ./gradlew assembleDebug --no-daemon
+          gradle assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
